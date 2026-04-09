@@ -9,7 +9,7 @@ export function AuthWall({ children }: { children: React.ReactNode }) {
   const [patInput, setPatInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!patInput.trim()) return;
     setIsSubmitting(true);

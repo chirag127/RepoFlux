@@ -45,21 +45,21 @@ import { Network, Database, Zap } from 'lucide-react';
         <div class="aspect-video bg-void border border-border rounded-2xl overflow-hidden shadow-2xl relative group">
           <div class="absolute inset-0 bg-noise opacity-30"></div>
           <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-full h-full p-8 font-mono text-[10px] text-accent/80 overflow-hidden leading-tight bg-surface/50">
-               {`// RepoFlux Dispatch Protocol v1.0\n`}
-               {`[OK] Authenticating via local_storage(github_pat)\n`}
-               {`[OK] Synchronizing state with {user}-repoflux-state\n`}
-               {`[>>] Dispatching AIDER to target-repo/master\n`}
-               {`[>>] Injecting workflow: .github/workflows/repoflux-agent.yml\n`}
-               {`[OK] SealedBox encrypted secrets deployed\n`}
-               {`[UP] Connection established with GHA runner ID: 74829\n`}
-               {`[LL] Aider: Analyzing repository map...\n`}
-               {`[LL] Aider: Detected 4 modified files in latest commit.\n`}
-               {`[LL] Aider: Requesting MCP Search for: "SOLID refactoring patterns"\n`}
-               {`[OK] Search result retrieved via Linkup MCP\n`}
-               {`[LL] Aider: Applying patches...\n`}
-               {`[OK] Pull Request created: #42 "chore: SOLID refactor"\n`}
-               {`[MISSION_COMPLETE] Terminating runner.`}
+            <div class="w-full h-full p-8 font-mono text-[10px] text-accent/80 overflow-hidden leading-tight bg-surface/50 whitespace-pre">
+               {`// RepoFlux Dispatch Protocol v1.0
+[OK] Authenticating via local_storage(github_pat)
+[OK] Synchronizing state with {user}-repoflux-state
+[>>] Dispatching AIDER to target-repo/master
+[>>] Injecting workflow: .github/workflows/repoflux-agent.yml
+[OK] SealedBox encrypted secrets deployed
+[UP] Connection established with GHA runner ID: 74829
+[LL] Aider: Analyzing repository map...
+[LL] Aider: Detected 4 modified files in latest commit.
+[LL] Aider: Requesting MCP Search for: "SOLID refactoring patterns"
+[OK] Search result retrieved via Linkup MCP
+[LL] Aider: Applying patches...
+[OK] Pull Request created: #42 "chore: SOLID refactor"
+[MISSION_COMPLETE] Terminating runner.`}
             </div>
           </div>
           <div class="absolute top-2 right-2 flex gap-1">
