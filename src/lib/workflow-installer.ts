@@ -191,5 +191,6 @@ export async function checkWorkflowStatus(owner: string, repo: string, branch = 
 
 export async function installAgentWorkflow(owner: string, repo: string, branch = 'main', existingSha?: string) {
   const msg = existingSha ? 'Update RepoFlux Agent Workflow' : 'Install RepoFlux Agent Workflow';
+  console.log(`[RepoFlux] Installing workflow to ${owner}/${repo} on branch: ${branch}`);
   await writeFile(owner, repo, WORKFLOW_PATH, msg, getWorkflowYamlTemplate(), branch, existingSha);
 }

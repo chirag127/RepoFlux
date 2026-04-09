@@ -37,7 +37,7 @@ export function HomeView() {
   const handleInstallWorkflow = async (repo: GitHubRepo) => {
     try {
       setIsInstallingId(repo.full_name);
-      await installAgentWorkflow(repo.owner.login, repo.name);
+      await installAgentWorkflow(repo.owner.login, repo.name, repo.default_branch);
       alert(`Workflow installed in ${repo.full_name}! Configuration created.`);
       navigate(`/repo/${repo.owner.login}/${repo.name}`);
     } catch (err) {

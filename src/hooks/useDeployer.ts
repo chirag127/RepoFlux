@@ -3,10 +3,13 @@ import { encryptSecret } from '../lib/secret-encryptor';
 import { installAgentWorkflow as installLibWorkflow, checkWorkflowStatus } from '../lib/workflow-installer';
 
 export function useDeployer() {
-  const installAgentWorkflow = async (owner: string, repo: string) => {
-    // 1. Fetch repo info to find default branch
-    const repoInfo = await getRepo(owner, repo);
-    const branch = repoInfo.default_branch || 'main';
+  const installAgentWorkflow = async (owner: string, repo: string, defaultBranch?: string) => {
+    // 1. Resolve branch without extra API calls if possible
+    let branch = defaultBranch;
+    if (!branch) {
+      const repoInfo = await getRepo(owner, repo);
+      branch = repoInfo.default_branch || 'main';
+    }
 
     const { installed, sha } = await checkWorkflowStatus(owner, repo, branch);
     if (!installed || true) { // Always update to ensure latest triggers
