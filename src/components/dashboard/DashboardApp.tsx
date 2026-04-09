@@ -28,11 +28,11 @@ export function DashboardApp() {
 
   if (matches.isSettings) {
     CurrentView = SettingsView;
-  } else if (path === 'templates') {
+  } else if (path === '/templates') {
     CurrentView = TemplatesView;
-  } else if (path === 'agents') {
+  } else if (path === '/agents') {
     CurrentView = AgentsView;
-  } else if (path === 'repo/add') {
+  } else if (path === '/repo/add') {
     CurrentView = AddRepoView;
   } else if (matches.isRepoDetail) {
     // Check if it's a run detail: repo/:owner/:name/run/:id

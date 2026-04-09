@@ -1,10 +1,46 @@
 import { getFile, writeFile } from './github';
+import { generateAllConfigs } from './config-gen';
+import { CANONICAL_SERVERS } from './config-gen/servers';
 
 export const WORKFLOW_PATH = '.github/workflows/repoflux-agent.yml';
 
-// This will be read from a template file or constant in the real app,
-// but hardcoded here for the initial setup.
-export const WORKFLOW_YAML_TEMPLATE = `
+export function getWorkflowYamlTemplate() {
+  const allIds = CANONICAL_SERVERS.map(s => s.id);
+  const workflowSecrets: Record<string, string> = {
+    CONTEXT7_API_KEY: '${{ secrets.CONTEXT7_API_KEY }}',
+    REF_API_KEY: '${{ secrets.REF_API_KEY }}',
+    LINKUP_API_KEY: '${{ secrets.LINKUP_API_KEY }}',
+    EXA_API_KEY: '${{ secrets.EXA_API_KEY }}',
+    SERPER_API_KEY: '${{ secrets.SERPER_API_KEY }}',
+    TAVILY_API_KEY: '${{ secrets.TAVILY_API_KEY }}',
+    GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}',
+  };
+
+  const configs = generateAllConfigs({
+    enabledServerIds: allIds,
+    secrets: workflowSecrets,
+    isGitHubActions: true,
+  });
+
+  let configGenerationSteps = `      - name: Generate MCP Configurations\n        run: |\n          mkdir -p .gemini .opencode .qwen .claude\n`;
+
+  for (const config of configs) {
+    const eofMarker = `${config.agent.toUpperCase().replace(/[^A-Z]/g, '')}_EOF`;
+    configGenerationSteps += `\n          # --- ${config.agent} (${config.filePath}) ---\n`;
+    configGenerationSteps += `          cat << '${eofMarker}' > ${config.filePath}\n`;
+    configGenerationSteps += config.content;
+    configGenerationSteps += `\n          ${eofMarker}\n`;
+
+    // Special copy steps to align with agent runners
+    if (config.agent === 'claude-code') {
+      configGenerationSteps += `          cp .mcp.json .claude/settings.json\n`;
+    }
+    if (config.agent === 'opencode') {
+      configGenerationSteps += `          cp .opencode.json .opencode/config.json\n`;
+    }
+  }
+
+  return `
 name: RepoFlux — AI Coding Agent
 
 on:
@@ -62,138 +98,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Generate MCP Configurations
-        run: |
-          mkdir -p .gemini .opencode .qwen .claude
-          
-          # --- Gemini CLI (.gemini/settings.json) ---
-          # Uses httpUrl for remote servers
-          cat << 'GEMINI_EOF' > .gemini/settings.json
-          {
-            "mcpServers": {
-              "sequential-thinking": {
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-              },
-              "context7": {
-                "httpUrl": "https://mcp.context7.com/mcp",
-                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
-              },
-              "ref": {
-                "httpUrl": "https://api.ref.tools/mcp",
-                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
-              },
-              "docfork": {
-                "command": "npx",
-                "args": ["-y", "docfork"]
-              },
-              "linkup": {
-                "httpUrl": "https://mcp.linkup.so/mcp?apiKey=\${{ secrets.LINKUP_API_KEY }}"
-              },
-              "exa": {
-                "httpUrl": "https://mcp.exa.ai/mcp"
-              }
-            }
-          }
-          GEMINI_EOF
-          
-          # --- Qwen Code (.qwen/settings.json) ---
-          # Full settings structure with httpUrl
-          cat << 'QWEN_EOF' > .qwen/settings.json
-          {
-            "security": { "auth": { "selectedType": "qwen-oauth" } },
-            "$version": 3,
-            "ide": { "enabled": true, "hasSeenNudge": true },
-            "model": { "name": "coder-model" },
-            "tools": { "approvalMode": "yolo" },
-            "general": { "language": "en" },
-            "context": { "fileFiltering": { "respectGitIgnore": false, "respectQwenIgnore": false } },
-            "mcpServers": {
-              "sequential-thinking": {
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-              },
-              "context7": {
-                "httpUrl": "https://mcp.context7.com/mcp",
-                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
-              },
-              "ref": {
-                "httpUrl": "https://api.ref.tools/mcp",
-                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
-              },
-              "docfork": {
-                "command": "npx",
-                "args": ["-y", "docfork"]
-              },
-              "linkup": {
-                "httpUrl": "https://mcp.linkup.so/mcp?apiKey=\${{ secrets.LINKUP_API_KEY }}"
-              },
-              "exa": {
-                "httpUrl": "https://mcp.exa.ai/mcp"
-              }
-            }
-          }
-          QWEN_EOF
-          
-          # --- Claude Code (.mcp.json) ---
-          # Uses type + url for remote servers
-          cat << 'CLAUDE_EOF' > .mcp.json
-          {
-            "mcpServers": {
-              "sequential-thinking": {
-                "type": "stdio",
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-              },
-              "context7": {
-                "type": "http",
-                "url": "https://mcp.context7.com/mcp",
-                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
-              },
-              "ref": {
-                "type": "http",
-                "url": "https://api.ref.tools/mcp",
-                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
-              },
-              "docfork": {
-                "type": "stdio",
-                "command": "npx",
-                "args": ["-y", "docfork"]
-              }
-            }
-          }
-          CLAUDE_EOF
-          cp .mcp.json .claude/settings.json
-          
-          # --- OpenCode (.opencode.json) ---
-          # Uses type + url for remote servers
-          cat << 'OPENCODE_EOF' > .opencode.json
-          {
-            "mcpServers": {
-              "sequential-thinking": {
-                "type": "stdio",
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-              },
-              "context7": {
-                "type": "sse",
-                "url": "https://mcp.context7.com/mcp",
-                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
-              },
-              "ref": {
-                "type": "sse",
-                "url": "https://api.ref.tools/mcp",
-                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
-              },
-              "docfork": {
-                "type": "stdio",
-                "command": "npx",
-                "args": ["-y", "docfork"]
-              }
-            }
-          }
-          OPENCODE_EOF
-          cp .opencode.json .opencode/config.json
+${configGenerationSteps}
           
       - name: Run Gemini CLI
         if: inputs.agent_type == 'gemini'
@@ -202,6 +107,14 @@ jobs:
         run: |
           npm install -g @google/gemini-cli@latest
           gemini -p "\${{ inputs.prompt }}" --yolo
+
+      - name: Run Qwen Code
+        if: inputs.agent_type == 'qwen'
+        env:
+          QWEN_API_KEY: \${{ secrets.QWEN_API_KEY }}
+        run: |
+          npm install -g qwen-code
+          qwen -p "\${{ inputs.prompt }}" --yolo
 
       - name: Run OpenCode
         if: inputs.agent_type == 'opencode'
@@ -242,6 +155,10 @@ jobs:
             git push origin \${{ inputs.branch }}
           fi
 `;
+}
+
+// Provided for backward compatibility if other modules depend on it directly
+export const WORKFLOW_YAML_TEMPLATE = getWorkflowYamlTemplate();
 
 export async function checkWorkflowStatus(owner: string, repo: string, branch = 'main') {
   try {
@@ -254,5 +171,5 @@ export async function checkWorkflowStatus(owner: string, repo: string, branch = 
 
 export async function installAgentWorkflow(owner: string, repo: string, branch = 'main', existingSha?: string) {
   const msg = existingSha ? 'Update RepoFlux Agent Workflow' : 'Install RepoFlux Agent Workflow';
-  await writeFile(owner, repo, WORKFLOW_PATH, msg, WORKFLOW_YAML_TEMPLATE, branch, existingSha);
+  await writeFile(owner, repo, WORKFLOW_PATH, msg, getWorkflowYamlTemplate(), branch, existingSha);
 }
