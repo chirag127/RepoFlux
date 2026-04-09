@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DashboardApp } from '../components/dashboard/DashboardApp';
+
+// Disable SSR for the entire React app entry point.
+// All routing and auth is handled client-side.
+---
+
+<BaseLayout title="Console | RepoFlux">
+  <DashboardApp client:only="react" />
+</BaseLayout>

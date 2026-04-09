@@ -1,0 +1,34 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+---
+
+<LegalLayout title="Cookie Policy" lastUpdated="April 09, 2026">
+  <h1>Cookie Policy</h1>
+  <p>Last updated: April 09, 2026</p>
+
+  <section>
+    <h2>What are cookies?</h2>
+    <p>Cookies are small pieces of text sent to your web browser by a website you visit. A cookie file is stored in your web browser and allows the service or a third-party to recognize you and make your next visit easier and the service more useful to you.</p>
+  </section>
+
+  <section>
+    <h2>How RepoFlux Uses Cookies</h2>
+    <p>RepoFlux is a zero-backend application and <strong>does not use traditional HTTP cookies</strong> for tracking or authentication.</p>
+    <p>Instead, we use <strong>Browser Local Storage</strong> and <strong>Session Storage</strong> to store your configuration and authentication tokens locally on your device. Specifically:</p>
+    <ul>
+      <li><code>github_pat</code>: Stores your GitHub Personal Access Token to authenticate API calls.</li>
+      <li><code>repoflux_config</code>: Stores your UI preferences and state configuration.</li>
+      <li><code>repoflux_ratelimit</code>: Stores cached API usage metrics to prevent over-consumption.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Your Choices Regarding Cookies/Storage</h2>
+    <p>If you'd like to delete these local data points, you can use your browser's "Clear Site Data" feature or specifically clear local storage for <code>repoflux.oriz.in</code>.</p>
+  </section>
+
+  <section>
+    <h2>Third-Party Cookies</h2>
+    <p>We do not use third-party tracking or advertising cookies. However, if you are logged into GitHub, they may set their own cookies according to their policy.</p>
+  </section>
+</LegalLayout>

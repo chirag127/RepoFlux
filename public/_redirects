@@ -1,0 +1,5 @@
+/*  /index.html  200
+/app/*  /app/index.html  200
+/repo/*  /app/index.html  200
+/settings/*  /app/index.html  200
+/templates/*  /app/index.html  200

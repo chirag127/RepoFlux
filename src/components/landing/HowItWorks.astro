@@ -1,0 +1,76 @@
+---
+import { Network, Database, Zap } from 'lucide-react';
+---
+
+<section id="how-it-works" class="py-32 bg-surface/30 relative">
+  <div class="container mx-auto px-6">
+    <div class="flex flex-col lg:flex-row gap-16 items-center">
+      <div class="lg:w-1/2">
+        <h2 class="text-4xl font-black font-display mb-8 leading-tight">The Architecture of <br/><span class="text-gradient">Total Autonomy</span></h2>
+        
+        <div class="space-y-8">
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/30">
+              <Database className="w-6 h-6 text-accent" />
+            </div>
+            <div>
+              <h4 class="text-lg font-bold mb-1">Decentralized State</h4>
+              <p class="text-text-secondary text-sm">RepoFlux stores your configuration in a private repository you own. No proprietary database, no vendor lock-in.</p>
+            </div>
+          </div>
+          
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-cyan/20 flex items-center justify-center border border-cyan/30">
+              <Network className="w-6 h-6 text-cyan" />
+            </div>
+            <div>
+              <h4 class="text-lg font-bold mb-1">Parallel Dispatch</h4>
+              <p class="text-text-secondary text-sm">Deploy agents across hundreds of repositories simultaneously. GitHub Actions provides the infinitely scalable compute for free.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-success/20 flex items-center justify-center border border-success/30">
+              <Zap className="w-6 h-6 text-success" />
+            </div>
+            <div>
+              <h4 class="text-lg font-bold mb-1">Optimistic Locking</h4>
+              <p class="text-text-secondary text-sm">Advanced concurrency management ensures state integrity even when multiple agents are performing tasks across your fleet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:w-1/2 relative">
+        <div class="aspect-video bg-void border border-border rounded-2xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 bg-noise opacity-30"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-full h-full p-8 font-mono text-[10px] text-accent/80 overflow-hidden leading-tight bg-surface/50">
+               {`// RepoFlux Dispatch Protocol v1.0\n`}
+               {`[OK] Authenticating via local_storage(github_pat)\n`}
+               {`[OK] Synchronizing state with {user}-repoflux-state\n`}
+               {`[>>] Dispatching AIDER to target-repo/master\n`}
+               {`[>>] Injecting workflow: .github/workflows/repoflux-agent.yml\n`}
+               {`[OK] SealedBox encrypted secrets deployed\n`}
+               {`[UP] Connection established with GHA runner ID: 74829\n`}
+               {`[LL] Aider: Analyzing repository map...\n`}
+               {`[LL] Aider: Detected 4 modified files in latest commit.\n`}
+               {`[LL] Aider: Requesting MCP Search for: "SOLID refactoring patterns"\n`}
+               {`[OK] Search result retrieved via Linkup MCP\n`}
+               {`[LL] Aider: Applying patches...\n`}
+               {`[OK] Pull Request created: #42 "chore: SOLID refactor"\n`}
+               {`[MISSION_COMPLETE] Terminating runner.`}
+            </div>
+          </div>
+          <div class="absolute top-2 right-2 flex gap-1">
+            <div class="w-2 h-2 rounded-full bg-error"></div>
+            <div class="w-2 h-2 rounded-full bg-warning"></div>
+            <div class="w-2 h-2 rounded-full bg-success"></div>
+          </div>
+        </div>
+        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-accent/20 blur-3xl -z-10 rounded-full"></div>
+        <div class="absolute -top-6 -left-6 w-32 h-32 bg-cyan/20 blur-3xl -z-10 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+</section>

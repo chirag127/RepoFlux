@@ -1,0 +1,32 @@
+---
+import { Github } from 'lucide-react';
+---
+
+<section class="flex-1 flex flex-col items-center justify-center text-center px-6 mt-20 relative z-10 scanlines overflow-hidden">
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(6,182,212,0.1),transparent_50%)]"></div>
+  
+  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-elevated border border-border text-xs font-mono text-text-muted mb-8 glass shadow-lg relative z-20">
+    <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+    <span>Version 1.0.0 — Zero Backend Architecture</span>
+  </div>
+  
+  <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-2xl relative z-20">
+    The Autonomous <br />
+    <span class="text-gradient">Control Plane for</span> <br />
+    <span class="text-gradient-accent">GitHub Repositories.</span>
+  </h1>
+  
+  <p class="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10 font-medium leading-relaxed relative z-20">
+    Orchestrate 9 free AI coding agents directly against your repositories using GitHub Actions. 
+    Zero servers. Zero costs. 100% Client-side.
+  </p>
+
+  <div class="flex flex-col sm:flex-row items-center gap-4 relative z-20">
+    <a href="/app" class="px-8 py-4 rounded-lg bg-accent text-white font-bold text-lg hover:bg-accent/90 transition-all active:scale-95 glow-accent duration-300 w-full sm:w-auto">
+      Boot Control Plane
+    </a>
+    <a href="https://github.com/chirag127/RepoFlux" target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-lg bg-surface border border-border text-text hover:bg-surface-hover hover:border-border-bright transition-all active:scale-95 duration-300 font-semibold text-lg flex items-center justify-center gap-2 w-full sm:w-auto glass-card">
+      <Github className="w-5 h-5" /> View Source
+    </a>
+  </div>
+</section>

@@ -1,0 +1,31 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { ArrowLeft } from 'lucide-react';
+
+interface Props {
+  title: string;
+  lastUpdated: string;
+}
+
+const { title, lastUpdated } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <div class="min-h-screen pt-24 pb-12 px-6">
+    <div class="max-w-3xl mx-auto glass p-8 md:p-12 rounded-xl relative overflow-hidden">
+      <!-- Glow effect -->
+      <div class="absolute -top-32 -right-32 w-64 h-64 bg-accent/20 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <a href="/" class="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors mb-8">
+        <ArrowLeft className="w-4 h-4" /> Back to Home
+      </a>
+      
+      <h1 class="text-3xl md:text-4xl font-bold mb-4 font-display text-gradient">{title}</h1>
+      <p class="text-sm text-text-muted mb-8 font-mono">Last Updated: {lastUpdated}</p>
+      
+      <div class="prose prose-invert prose-p:text-text-secondary prose-h2:text-text prose-h2:mt-10 prose-h2:mb-4 prose-h2:font-display prose-a:text-accent prose-li:text-text-secondary max-w-none">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

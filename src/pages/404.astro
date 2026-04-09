@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ArrowLeft, TerminalSquare } from 'lucide-react';
+---
+
+<BaseLayout title="404 | System Error">
+  <div class="min-h-screen flex items-center justify-center p-6 scanlines">
+    <div class="text-center">
+      <div class="inline-flex justify-center items-center w-20 h-20 rounded-full bg-error/10 text-error mb-6 glow-accent !shadow-error/20">
+        <TerminalSquare className="w-10 h-10" />
+      </div>
+      <h1 class="text-6xl md:text-8xl font-black font-mono text-error mb-4">404</h1>
+      <h2 class="text-2xl font-bold mb-6 font-display">Directory Not Found</h2>
+      <p class="text-text-secondary mb-10 max-w-md mx-auto">
+        The path you are trying to access does not exist in the RepoFlux control plane routing tables.
+      </p>
+      <a href="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-surface border border-border hover:border-border-bright hover:bg-surface-hover transition-all glass">
+        <ArrowLeft className="w-4 h-4" /> Initialize Return Sequence
+      </a>
+    </div>
+  </div>
+</BaseLayout>

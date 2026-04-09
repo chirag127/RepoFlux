@@ -1,0 +1,26 @@
+---
+import { Terminal, Github } from 'lucide-react';
+---
+
+<header class="container mx-auto px-6 py-4 flex items-center justify-between relative z-50">
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 rounded bg-cyan/20 border border-cyan/50 flex items-center justify-center glow-accent">
+      <Terminal className="w-5 h-5 text-cyan" />
+    </div>
+    <span class="text-xl font-bold font-display tracking-wide">
+      RepoFlux<span class="text-cyan">.</span>
+    </span>
+  </div>
+  <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-text-muted">
+    <a href="#features" class="hover:text-text transition-colors">Features</a>
+    <a href="#how-it-works" class="hover:text-text transition-colors">Architecture</a>
+    <a href="https://github.com/chirag127/RepoFlux" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors flex items-center gap-2">
+      <Github className="w-4 h-4" /> GitHub
+    </a>
+  </nav>
+  <div class="flex items-center gap-4">
+    <a href="/app" class="px-5 py-2.5 rounded-md bg-white text-black font-semibold text-sm hover:bg-white/90 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+      Launch Console
+    </a>
+  </div>
+</header>

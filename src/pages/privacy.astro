@@ -1,0 +1,39 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+---
+
+<LegalLayout title="Privacy Policy" lastUpdated="April 09, 2026">
+  <h1>Privacy Policy</h1>
+  <p>Last updated: April 09, 2026</p>
+
+  <section>
+    <h2>1. Introduction</h2>
+    <p>RepoFlux ("we," "our," or "us") is a zero-backend, client-side application. We respect your privacy and are committed to protecting it through our compliance with this policy.</p>
+  </section>
+
+  <section>
+    <h2>2. Zero-Backend Architecture</h2>
+    <p>RepoFlux is uniquely designed to operate without a centralized backend server. All repository management, token handling, and configuration occur strictly within your browser environment and your personal GitHub Actions runners.</p>
+  </section>
+
+  <section>
+    <h2>3. Data Collection and Processing</h2>
+    <p><strong>Personal Data:</strong> We do not collect, store, or transmit your personal data to any server owned or controlled by us. Your GitHub Personal Access Token (PAT) is stored exclusively in your browser's <code>localStorage</code>.</p>
+    <p><strong>GitHub Data:</strong> RepoFlux interacts with the GitHub API directly from your browser. We do not intermediate this connection. Your repository data, code, and workflow logs stay within the GitHub ecosystem.</p>
+  </section>
+
+  <section>
+    <h2>4. Security and Encryption</h2>
+    <p>We use industry-standard encryption (TweetNaCl sealed boxes) to encrypt any secrets before they are transmitted to the GitHub API. This ensures that your API keys and sensitive configuration are never exposed in transit or stored in plaintext.</p>
+  </section>
+
+  <section>
+    <h2>5. Third-Party Services</h2>
+    <p>RepoFlux facilitates connections to third-party AI providers (e.g., Google AI Studio, Anthropic, OpenRouter). Your use of these services is subject to their respective privacy policies. We do not have access to the data sent to or received from these providers.</p>
+  </section>
+
+  <section>
+    <h2>6. Contact Us</h2>
+    <p>If you have any questions about this Privacy Policy, you can contact us at: support@repoflux.oriz.in</p>
+  </section>
+</LegalLayout>

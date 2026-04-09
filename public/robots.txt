@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /repo/
+
+Sitemap: https://repoflux.oriz.in/sitemap.xml
