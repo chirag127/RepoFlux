@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AGENT_REGISTRY } from '@/lib/agents/registry';
-import { getRepo, dispatchWorkflow, listWorkflowRuns, type GitHubWorkflowRun } from '@/lib/github';
+import { getRepo, dispatchWorkflow, listWorkflowRuns, getRepoPublicKey, createOrUpdateSecret, type GitHubWorkflowRun } from '@/lib/github';
+import { encryptSecret } from '@/lib/secret-encryptor';
 import type { AgentType } from '@/types/repository';
 import { RunRow } from '../runs/RunRow';
 
@@ -45,6 +46,21 @@ export function RepoDetailView({ owner, name }: { owner: string, name: string })
         state_repo: `${user?.login}-repoflux-state`,
         branch: 'main',
       };
+
+      // Push required secrets to the repository dynamically
+      const requiredSecrets = AGENT_REGISTRY[selectedAgent].requiredSecrets || [];
+      if (requiredSecrets.length > 0) {
+        const pk = await getRepoPublicKey(owner, name);
+        for (const secretName of requiredSecrets) {
+          const val = localStorage.getItem(`repoflux_key_${secretName}`);
+          if (val) {
+            const encryptedValue = await encryptSecret(val, pk.key);
+            await createOrUpdateSecret(owner, name, secretName, encryptedValue, pk.key_id);
+          } else {
+             console.warn(`Warning: Missing ${secretName} in Settings!`);
+          }
+        }
+      }
 
       await dispatchWorkflow(owner, name, 'repoflux-agent.yml', 'main', inputs);
       alert('Mission Dispatched! Agent is spinning up on GitHub Actions.');

@@ -58,6 +58,14 @@ export interface GitHubJob {
   started_at: string;
   completed_at: string | null;
   html_url: string;
+  steps?: {
+    name: string;
+    status: string;
+    conclusion: string | null;
+    number: number;
+    started_at: string;
+    completed_at: string | null;
+  }[];
 }
 
 export interface RepoPublicKey {

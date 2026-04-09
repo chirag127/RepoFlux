@@ -22,7 +22,27 @@ export function getWorkflowYamlTemplate() {
     isGitHubActions: true,
   });
 
-  let configGenerationSteps = `      - name: Generate MCP Configurations\n        run: |\n          mkdir -p .gemini .opencode .qwen .claude\n`;
+  let configGenerationSteps = `      - name: Generate Global Context and MCP Configurations
+        run: |
+          mkdir -p .gemini .opencode .qwen .claude
+          
+          # --- Global Context (GEMINI.md) ---
+          cat << 'GEMINIMD_EOF' > GEMINI.md
+          # Project Instructions
+          - **Environment:** You are running in an automated CI/CD GitHub Actions environment.
+          - **Focus:** Always output functional and production-ready code.
+          - **Constraints:** Do not use interactive shell commands. Assume \`--yolo\` approval mode.
+          GEMINIMD_EOF
+          
+          # --- Exclusions (.geminiignore) ---
+          cat << 'GEMINIIGNORE_EOF' > .geminiignore
+          node_modules/
+          dist/
+          build/
+          .git/
+          .env
+          GEMINIIGNORE_EOF
+`;
 
   for (const config of configs) {
     const eofMarker = `${config.agent.toUpperCase().replace(/[^A-Z]/g, '')}_EOF`;
@@ -106,7 +126,7 @@ ${configGenerationSteps}
           GEMINI_API_KEY: \${{ secrets.GEMINI_API_KEY }}
         run: |
           npm install -g @google/gemini-cli@latest
-          gemini -p "\${{ inputs.prompt }}" --yolo
+          gemini -p "\${{ inputs.prompt }}" --approval-mode=yolo
 
       - name: Run Qwen Code
         if: inputs.agent_type == 'qwen'

@@ -78,7 +78,47 @@ export function RunViewer({ owner, name, runIdStr }: { owner: string, name: stri
         </div>
       </header>
 
-      <LogViewer logs={rawLogs} isRunning={isRunning} />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-surface/30 glass-card rounded-md border border-border/50 font-mono text-sm">
+        {job?.steps && job.steps.length > 0 ? (
+          <div className="space-y-3">
+            {job.steps.map(step => (
+              <div key={step.number} className="flex flex-col border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {step.status === 'in_progress' ? (
+                      <Activity className="w-4 h-4 text-accent animate-pulse" />
+                    ) : step.conclusion === 'success' ? (
+                      <div className="w-4 h-4 rounded-full bg-success/20 flex items-center justify-center text-success text-[10px]">✓</div>
+                    ) : step.conclusion === 'failure' ? (
+                      <div className="w-4 h-4 rounded-full bg-error/20 flex items-center justify-center text-error text-[10px]">!</div>
+                    ) : step.status === 'queued' ? (
+                      <div className="w-4 h-4 rounded-full border border-text-muted flex items-center justify-center"></div>
+                    ) : (
+                       <div className="w-4 h-4"></div>
+                    )}
+                    <span className={`font-semibold ${step.status === 'in_progress' ? 'text-accent' : step.conclusion === 'failure' ? 'text-error' : 'text-text'}`}>
+                      {step.name}
+                    </span>
+                  </div>
+                  <span className="text-xs text-text-muted">
+                    {step.status === 'completed' ? step.conclusion : step.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <LogViewer logs={rawLogs} isRunning={isRunning} />
+        )}
+        
+        {/* Only show raw logs if present and not overridden by steps view, or if completed */}
+        {rawLogs && job?.status === 'completed' && (
+          <div className="mt-8 border-t border-border/50 pt-4">
+             <h3 className="text-xs uppercase text-text-muted mb-4 font-bold border-b border-border/50 pb-2">Full Execution Log</h3>
+             <LogViewer logs={rawLogs} isRunning={false} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

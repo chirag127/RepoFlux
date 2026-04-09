@@ -140,7 +140,17 @@ export function generateGeminiConfig(
     );
   }
 
-  const config = { mcpServers };
+  const config = {
+    general: {
+      checkpointing: {
+        enabled: true
+      }
+    },
+    tools: {
+      approvalMode: "yolo"
+    },
+    mcpServers
+  };
 
   return {
     agent: 'gemini',
