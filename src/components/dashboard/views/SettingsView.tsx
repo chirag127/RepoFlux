@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { UploadCloud, CheckCircle2 } from 'lucide-react';
 
 // The keys we support based on the Agent Registry and MCP Configs
 const SUPPORTED_KEYS = [
@@ -18,6 +20,8 @@ export function SettingsView() {
   const { updateConfig } = useAppStorage();
   const [keys, setKeys] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [envText, setEnvText] = useState('');
+  const [importStatus, setImportStatus] = useState<'idle' | 'success'>('idle');
 
   useEffect(() => {
     // Load keys from local storage for seamless client-side only security
@@ -30,6 +34,47 @@ export function SettingsView() {
 
   const handleKeyChange = (key: string, value: string) => {
     setKeys(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleBulkImport = () => {
+    if (!envText.trim()) return;
+
+    const newKeys = { ...keys };
+    let importCount = 0;
+
+    const lines = envText.split(/\r?\n/);
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      // Skip comments and empty lines
+      if (!trimmed || trimmed.startsWith('#')) return;
+
+      const equalIndex = trimmed.indexOf('=');
+      if (equalIndex === -1) return;
+
+      const rawKey = trimmed.substring(0, equalIndex).trim();
+      let rawVal = trimmed.substring(equalIndex + 1).trim();
+
+      // Clean value (remove quotes)
+      if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith("'") && rawVal.endsWith("'"))) {
+        rawVal = rawVal.substring(1, rawVal.length - 1);
+      }
+
+      if (SUPPORTED_KEYS.includes(rawKey)) {
+        newKeys[rawKey] = rawVal;
+        importCount++;
+      }
+    });
+
+    setKeys(newKeys);
+    setImportStatus('success');
+    setEnvText('');
+    
+    setTimeout(() => setImportStatus('idle'), 3000);
+    if (importCount > 0) {
+      alert(`Successfully imported ${importCount} keys from .env content.`);
+    } else {
+      alert('No matching keys found in the provided text.');
+    }
   };
 
   const handleSave = async () => {
@@ -93,6 +138,38 @@ export function SettingsView() {
               />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="glass-card rounded-xl p-6 mb-8 border-accent/20">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-border/50 pb-4">
+          <UploadCloud className="w-5 h-5 text-accent" /> Bulk Setup (.env Import)
+        </h2>
+        <p className="text-sm text-text-muted mb-6">
+          Paste the contents of your `.env` file below to automatically populate all matching API keys.
+        </p>
+
+        <div className="space-y-4">
+          <Textarea 
+            placeholder={"GEMINI_API_KEY=...\nOPENROUTER_API_KEY=..."}
+            className="h-40 bg-surface/50 border-border focus:border-accent font-mono text-sm resize-none custom-scrollbar"
+            value={envText}
+            onChange={e => setEnvText(e.target.value)}
+          />
+          <div className="flex justify-end">
+             <Button 
+              onClick={handleBulkImport} 
+              disabled={!envText.trim()}
+              variant="secondary"
+              className="bg-accent/10 hover:bg-accent/20 text-accent border border-accent/20"
+            >
+              {importStatus === 'success' ? (
+                <><CheckCircle2 className="w-4 h-4 mr-2" /> Keys Imported</>
+              ) : (
+                <><UploadCloud className="w-4 h-4 mr-2" /> Sync .env Content</>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
