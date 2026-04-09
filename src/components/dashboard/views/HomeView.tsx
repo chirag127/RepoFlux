@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useAuth, useRouter, useDeployer } from '@/hooks';
 import { Search, Terminal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { listRepos, type GitHubRepo } from '@/lib/github';
+import { listRepos, type GitHubRepo, GitHubApiError } from '@/lib/github';
 import { RepoCard } from '../repos/RepoCard';
+import { TroubleshootingGuide, type Diagnostics } from '../diagnostics/TroubleshootingGuide';
 
 export function HomeView() {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ export function HomeView() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isInstallingId, setIsInstallingId] = useState<string | null>(null);
+  const [diagnostics, setDiagnostics] = useState<Diagnostics | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -40,8 +42,14 @@ export function HomeView() {
       await installAgentWorkflow(repo.owner.login, repo.name, repo.default_branch);
       alert(`Workflow installed in ${repo.full_name}! Configuration created.`);
       navigate(`/repo/${repo.owner.login}/${repo.name}`);
-    } catch (err) {
-      alert(`Installation failed: ${err}`);
+    } catch (err: any) {
+      if (err instanceof GitHubApiError) {
+        if (err.isPermissionError) setDiagnostics({ error: err, type: 'permission' });
+        else if (err.isTriggerError) setDiagnostics({ error: err, type: 'trigger' });
+        else setDiagnostics({ error: err, type: 'generic' });
+      } else {
+        alert(`Installation failed: ${err}`);
+      }
     } finally {
       setIsInstallingId(null);
     }
@@ -88,6 +96,12 @@ export function HomeView() {
           )}
         </div>
       )}
+
+      <TroubleshootingGuide 
+        diagnostics={diagnostics} 
+        onClose={() => setDiagnostics(null)} 
+        title="Installation Interrupt"
+      />
     </div>
   );
 }
