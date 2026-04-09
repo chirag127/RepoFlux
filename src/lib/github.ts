@@ -1,11 +1,30 @@
 export class GitHubApiError extends Error {
+  public isPermissionError = false;
+  public isTriggerError = false;
+  public acceptedScopes: string[] = [];
+  public currentScopes: string[] = [];
+
   constructor(
     public status: number,
     public message: string,
-    public url: string
+    public url: string,
+    headers?: Headers
   ) {
     super(`GitHub API Error ${status}: ${message} (${url})`);
     this.name = 'GitHubApiError';
+
+    if (headers) {
+      this.acceptedScopes = headers.get('x-accepted-oauth-scopes')?.split(',').map(s => s.trim()) || [];
+      this.currentScopes = headers.get('x-oauth-scopes')?.split(',').map(s => s.trim()) || [];
+    }
+
+    if (status === 403 || status === 401 || message.includes('Resource not accessible')) {
+      this.isPermissionError = true;
+    }
+
+    if (message.includes('workflow_dispatch')) {
+      this.isTriggerError = true;
+    }
   }
 }
 
@@ -98,7 +117,7 @@ export async function fetchGitHub<T>(
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      throw new GitHubApiError(response.status, errData.message || response.statusText, url);
+      throw new GitHubApiError(response.status, errData.message || response.statusText, url, response.headers);
     }
 
     // 204 No Content
@@ -122,9 +141,9 @@ export async function fetchGitHub<T>(
 // ==========================================
 // API wrappers
 // ==========================================
-import type { GitHubUser, GitHubRepo, GitHubContent, GitHubWorkflowRun, GitHubJob, RepoPublicKey } from '../types/github';
+import type { GitHubUser, GitHubRepo, GitHubContent, GitHubWorkflowRun, GitHubJob, RepoPublicKey, GitHubWorkflow } from '../types/github';
 
-export type { GitHubUser, GitHubRepo, GitHubContent, GitHubWorkflowRun, GitHubJob, RepoPublicKey };
+export type { GitHubUser, GitHubRepo, GitHubContent, GitHubWorkflowRun, GitHubJob, RepoPublicKey, GitHubWorkflow };
 
 export const getUser = () => fetchGitHub<GitHubUser>('/user');
 
@@ -179,6 +198,10 @@ export const dispatchWorkflow = (owner: string, repo: string, workflowId: string
 
 export const listWorkflowRuns = (owner: string, repo: string, workflowId: string) => {
   return fetchGitHub<{ workflow_runs: GitHubWorkflowRun[] }>(`/repos/${owner}/${repo}/actions/workflows/${workflowId}/runs?per_page=10`);
+};
+
+export const getWorkflow = (owner: string, repo: string, workflowId: string) => {
+  return fetchGitHub<GitHubWorkflow>(`/repos/${owner}/${repo}/actions/workflows/${workflowId}`);
 };
 
 export const getWorkflowRun = (owner: string, repo: string, runId: number) => {

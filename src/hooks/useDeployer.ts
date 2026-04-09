@@ -1,15 +1,18 @@
-import { getRepoPublicKey, createOrUpdateSecret } from '../lib/github';
+import { getRepoPublicKey, createOrUpdateSecret, getRepo } from '../lib/github';
 import { encryptSecret } from '../lib/secret-encryptor';
 import { installAgentWorkflow as installLibWorkflow, checkWorkflowStatus } from '../lib/workflow-installer';
 
 export function useDeployer() {
-  const installAgentWorkflow = async (owner: string, repo: string, branch = 'main') => {
+  const installAgentWorkflow = async (owner: string, repo: string) => {
+    // 1. Fetch repo info to find default branch
+    const repoInfo = await getRepo(owner, repo);
+    const branch = repoInfo.default_branch || 'main';
+
     const { installed, sha } = await checkWorkflowStatus(owner, repo, branch);
-    if (!installed) {
+    if (!installed || true) { // Always update to ensure latest triggers
       await installLibWorkflow(owner, repo, branch, sha);
       return true;
     }
-    return false; // Already installed
   };
 
   const deploySecrets = async (owner: string, repo: string, secretsMap: Record<string, string>) => {

@@ -21,6 +21,25 @@ No backend servers required. No databases. Your code and API keys never touch ou
 - **Live Telemetry:** Stream ANSI-formatted workflow logs in real-time.
 - **State Segregation:** All configurations are saved to a dedicated, private `[your-username]-repoflux-state` repository using optimistic concurrency.
 
+## 🔐 Authentication & Permissions
+
+RepoFlux interacts with the GitHub API on your behalf. For full functionality, your **Personal Access Token (PAT)** requires specific permissions:
+
+### Recommended Setup (Classic PAT)
+The simplest way is to create a [Classic Token](https://github.com/settings/tokens) with the `repo` scope. This covers repository content, actions, and secrets.
+
+### Secure Setup (Fine-Grained PAT)
+If you prefer [Fine-Grained Tokens](https://github.com/settings/personal-access-tokens/new), grant **Read and Write** access to the following **Repository Permissions**:
+- **Actions**: Triggering missions.
+- **Secrets**: Injecting API keys for agents.
+- **Contents**: Installing configurations.
+- **Workflows**: Managing agent YAML files.
+- **Metadata**: Base repository access (Read-only).
+
+> [!WARNING]
+> If you encounter a `Resource not accessible` error, it almost always means your token lacks the **Secrets: Write** or **Actions: Write** permission. Ensure these are enabled in your token settings.
+
+
 ## Architecture & Data Flow
 
 1. **Auth:** User provides GitHub PAT (stored securely in browser memory/localStorage).
