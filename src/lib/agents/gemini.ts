@@ -25,5 +25,5 @@ export const gemini: AgentExecutor = {
   installStep:
     'npm install -g @google/gemini-cli@latest',
   executeCommand:
-    'gemini -p "{{PROMPT}}" --non-interactive',
+    'gemini -p "{{PROMPT}}" --yolo',
 };

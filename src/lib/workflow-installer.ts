@@ -66,23 +66,134 @@ jobs:
         run: |
           mkdir -p .gemini .opencode .qwen .claude
           
-          # Basic Context7/Ref/Sequential MCP standard config
-          cat << 'EOF' > mcp.json
+          # --- Gemini CLI (.gemini/settings.json) ---
+          # Uses httpUrl for remote servers
+          cat << 'GEMINI_EOF' > .gemini/settings.json
           {
             "mcpServers": {
-              "sequential-thinking": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"] },
-              "context7": { "serverUrl": "https://mcp.context7.com/mcp", "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" } },
-              "ref": { "serverUrl": "https://api.ref.tools/mcp", "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" } },
-              "filesystem": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/github/workspace"] },
-              "github": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "env": { "GITHUB_TOKEN": "\${{ secrets.GITHUB_TOKEN }}" } }
+              "sequential-thinking": {
+                "command": "npx",
+                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+              },
+              "context7": {
+                "httpUrl": "https://mcp.context7.com/mcp",
+                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
+              },
+              "ref": {
+                "httpUrl": "https://api.ref.tools/mcp",
+                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
+              },
+              "docfork": {
+                "command": "npx",
+                "args": ["-y", "docfork"]
+              },
+              "linkup": {
+                "httpUrl": "https://mcp.linkup.so/mcp?apiKey=\${{ secrets.LINKUP_API_KEY }}"
+              },
+              "exa": {
+                "httpUrl": "https://mcp.exa.ai/mcp"
+              }
             }
           }
-          EOF
+          GEMINI_EOF
           
-          cp mcp.json .gemini/settings.json
-          cp mcp.json .opencode/config.json
-          cp mcp.json .qwen/settings.json
-          cp mcp.json .claude/settings.json
+          # --- Qwen Code (.qwen/settings.json) ---
+          # Full settings structure with httpUrl
+          cat << 'QWEN_EOF' > .qwen/settings.json
+          {
+            "security": { "auth": { "selectedType": "qwen-oauth" } },
+            "$version": 3,
+            "ide": { "enabled": true, "hasSeenNudge": true },
+            "model": { "name": "coder-model" },
+            "tools": { "approvalMode": "yolo" },
+            "general": { "language": "en" },
+            "context": { "fileFiltering": { "respectGitIgnore": false, "respectQwenIgnore": false } },
+            "mcpServers": {
+              "sequential-thinking": {
+                "command": "npx",
+                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+              },
+              "context7": {
+                "httpUrl": "https://mcp.context7.com/mcp",
+                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
+              },
+              "ref": {
+                "httpUrl": "https://api.ref.tools/mcp",
+                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
+              },
+              "docfork": {
+                "command": "npx",
+                "args": ["-y", "docfork"]
+              },
+              "linkup": {
+                "httpUrl": "https://mcp.linkup.so/mcp?apiKey=\${{ secrets.LINKUP_API_KEY }}"
+              },
+              "exa": {
+                "httpUrl": "https://mcp.exa.ai/mcp"
+              }
+            }
+          }
+          QWEN_EOF
+          
+          # --- Claude Code (.mcp.json) ---
+          # Uses type + url for remote servers
+          cat << 'CLAUDE_EOF' > .mcp.json
+          {
+            "mcpServers": {
+              "sequential-thinking": {
+                "type": "stdio",
+                "command": "npx",
+                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+              },
+              "context7": {
+                "type": "http",
+                "url": "https://mcp.context7.com/mcp",
+                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
+              },
+              "ref": {
+                "type": "http",
+                "url": "https://api.ref.tools/mcp",
+                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
+              },
+              "docfork": {
+                "type": "stdio",
+                "command": "npx",
+                "args": ["-y", "docfork"]
+              }
+            }
+          }
+          CLAUDE_EOF
+          cp .mcp.json .claude/settings.json
+          
+          # --- OpenCode (.opencode.json) ---
+          # Uses type + url for remote servers
+          cat << 'OPENCODE_EOF' > .opencode.json
+          {
+            "mcpServers": {
+              "sequential-thinking": {
+                "type": "stdio",
+                "command": "npx",
+                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+              },
+              "context7": {
+                "type": "sse",
+                "url": "https://mcp.context7.com/mcp",
+                "headers": { "CONTEXT7_API_KEY": "\${{ secrets.CONTEXT7_API_KEY }}" }
+              },
+              "ref": {
+                "type": "sse",
+                "url": "https://api.ref.tools/mcp",
+                "headers": { "x-ref-api-key": "\${{ secrets.REF_API_KEY }}" }
+              },
+              "docfork": {
+                "type": "stdio",
+                "command": "npx",
+                "args": ["-y", "docfork"]
+              }
+            }
+          }
+          OPENCODE_EOF
+          cp .opencode.json .opencode/config.json
           
       - name: Run Gemini CLI
         if: inputs.agent_type == 'gemini'
@@ -90,7 +201,7 @@ jobs:
           GEMINI_API_KEY: \${{ secrets.GEMINI_API_KEY }}
         run: |
           npm install -g @google/gemini-cli@latest
-          gemini -p "\${{ inputs.prompt }}" --non-interactive
+          gemini -p "\${{ inputs.prompt }}" --yolo
 
       - name: Run OpenCode
         if: inputs.agent_type == 'opencode'

@@ -1,3 +1,10 @@
+/**
+ * Legacy MCP server definitions.
+ *
+ * @deprecated Use `src/lib/config-gen/servers.ts`
+ * for the canonical registry. This file remains
+ * for backward compat with existing UI components.
+ */
 export interface McpServerRegistryItem {
   id: string;
   name: string;
@@ -6,82 +13,93 @@ export interface McpServerRegistryItem {
   requiresSecrets: string[];
 }
 
-export const MCP_SERVER_DEFINITIONS: Record<string, McpServerRegistryItem> = {
+export const MCP_SERVER_DEFINITIONS:
+  Record<string, McpServerRegistryItem> = {
   'sequential-thinking': {
     id: 'sequential-thinking',
     name: 'Sequential Thinking',
-    description: 'Autonomous reasoning loop for complex problem solving.',
+    description:
+      'Autonomous reasoning loop.',
     type: 'stdio',
-    requiresSecrets: []
+    requiresSecrets: [],
   },
   'context7': {
     id: 'context7',
     name: 'Context7',
-    description: 'Premium documentation and code examples registry.',
+    description:
+      'Premium docs and code examples.',
     type: 'sse',
-    requiresSecrets: ['CONTEXT7_API_KEY']
+    requiresSecrets: ['CONTEXT7_API_KEY'],
   },
   'ref': {
     id: 'ref',
     name: 'Ref Tools',
-    description: 'Documentation search and reading via Ref API.',
+    description:
+      'Documentation search and reading.',
     type: 'sse',
-    requiresSecrets: ['REF_API_KEY']
+    requiresSecrets: ['REF_API_KEY'],
   },
   'docfork': {
     id: 'docfork',
     name: 'Docfork',
-    description: 'Official library documentation search via Docfork.',
+    description:
+      'Official library docs search.',
     type: 'stdio',
-    requiresSecrets: []
+    requiresSecrets: [],
   },
   'exa': {
     id: 'exa',
     name: 'Exa AI',
-    description: 'AI-native web search and research.',
+    description: 'AI-native web search.',
     type: 'sse',
-    requiresSecrets: ['EXA_API_KEY']
+    requiresSecrets: [],
   },
   'linkup': {
     id: 'linkup',
     name: 'Linkup',
-    description: 'Fast, reliable web search and scraping.',
+    description:
+      'Fast web search and scraping.',
     type: 'sse',
-    requiresSecrets: ['LINKUP_API_KEY']
+    requiresSecrets: ['LINKUP_API_KEY'],
   },
   'kindly-web-search': {
     id: 'kindly-web-search',
     name: 'Kindly Search',
-    description: 'Redundant search via Serper and Tavily.',
+    description:
+      'Multi-provider search (Serper + Tavily).',
     type: 'stdio',
-    requiresSecrets: ['SERPER_API_KEY', 'TAVILY_API_KEY']
+    requiresSecrets: [
+      'SERPER_API_KEY',
+      'TAVILY_API_KEY',
+    ],
   },
   'filesystem': {
     id: 'filesystem',
     name: 'Filesystem',
-    description: 'Local file read/write operations.',
+    description: 'Local file read/write.',
     type: 'stdio',
-    requiresSecrets: []
+    requiresSecrets: [],
   },
   'github': {
     id: 'github',
     name: 'GitHub API',
-    description: 'Direct repository read/write access.',
+    description:
+      'Direct repository read/write.',
     type: 'stdio',
-    requiresSecrets: []
+    requiresSecrets: [],
   },
   'memory': {
     id: 'memory',
     name: 'Memory',
-    description: 'Persistent contextual memory for agents.',
+    description: 'Persistent context memory.',
     type: 'stdio',
-    requiresSecrets: []
+    requiresSecrets: [],
   },
   'fetch': {
     id: 'fetch',
-    name: 'Fetch Utilities',
-    description: 'Generic HTTP fetch capabilities.',
+    name: 'Fetch',
+    description: 'Generic HTTP fetch.',
     type: 'stdio',
-    requiresSecrets: []
-  }
+    requiresSecrets: [],
+  },
 };
